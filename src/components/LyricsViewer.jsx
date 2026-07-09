@@ -1,4 +1,14 @@
+import { useEffect, useState } from 'react'
+import { SCRIPTS, transliterate } from '../lib/transliterate'
+
 function LyricsViewer({ song, isLoading, error }) {
+  const [script, setScript] = useState('roman')
+
+  // Reset to the original script whenever a different song loads.
+  useEffect(() => {
+    setScript('roman')
+  }, [song?.id])
+
   return (
     <div className="rounded-2xl border border-white/10 bg-charcoal-900 p-6 min-h-[24rem]">
       {isLoading && (
@@ -23,10 +33,37 @@ function LyricsViewer({ song, isLoading, error }) {
 
       {!isLoading && !error && song && (
         <div>
-          <h2 className="text-xl font-semibold text-gray-100">{song.title}</h2>
-          <p className="mb-4 text-sm text-indigo-400">{song.artist}</p>
+          <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-100">{song.title}</h2>
+              <p className="text-sm text-indigo-400">{song.artist}</p>
+            </div>
+
+            <div className="flex flex-wrap gap-1.5">
+              {SCRIPTS.map((s) => (
+                <button
+                  key={s.code}
+                  onClick={() => setScript(s.code)}
+                  className={`rounded-xl px-3 py-1 text-xs font-medium transition-colors ${
+                    script === s.code
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-charcoal-700 text-gray-400 hover:text-gray-200'
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {script !== 'roman' && (
+            <p className="mb-3 text-xs text-gray-500">
+              Approximate phonetic transliteration — may not be linguistically exact.
+            </p>
+          )}
+
           <pre className="whitespace-pre-wrap break-words font-sans text-gray-300 leading-relaxed">
-            {song.lyrics}
+            {transliterate(song.lyrics, script)}
           </pre>
         </div>
       )}
