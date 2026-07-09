@@ -65,15 +65,32 @@ function App() {
       return
     }
 
+    let track
     try {
-      const { artist, title } = await searchTrack(query)
-      const lyrics = await fetchLyrics(artist, title)
-      const song = { id: `live-${artist}-${title}`.toLowerCase(), title, artist, lyrics }
+      track = await searchTrack(query)
+    } catch {
+      setCurrentSong(null)
+      setError(`We couldn't find any song matching "${query}". Try another title or artist.`)
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      const lyrics = await fetchLyrics(track.artist, track.title)
+      const song = {
+        id: `live-${track.artist}-${track.title}`.toLowerCase(),
+        title: track.title,
+        artist: track.artist,
+        lyrics,
+      }
       setCurrentSong(song)
       addToHistory(song)
     } catch {
       setCurrentSong(null)
-      setError(`We couldn't find lyrics for "${query}". Try another title or artist.`)
+      setError(
+        `Found "${track.title}" by ${track.artist}, but no lyrics are available for it. ` +
+          'Our free lyrics source has limited coverage for regional-language and older songs.',
+      )
     } finally {
       setIsLoading(false)
     }
