@@ -4,7 +4,7 @@ import Sanscript from '@indic-transliteration/sanscript'
 // Indic scripts. Input is assumed to be casual ITRANS-like romanization
 // (e.g. lyrics.ovh results), so output is approximate, not authoritative.
 export const SCRIPTS = [
-  { code: 'roman', label: 'Roman' },
+  { code: 'roman', label: 'English' },
   { code: 'devanagari', label: 'Devanagari (Hindi)' },
   { code: 'kannada', label: 'Kannada' },
 ]
