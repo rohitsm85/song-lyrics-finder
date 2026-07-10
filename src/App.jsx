@@ -2,25 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import SearchBar from './components/SearchBar'
 import LyricsViewer from './components/LyricsViewer'
 import Sidebar from './components/Sidebar'
-import mockLyrics from './data/mockLyrics'
 import { fetchLyrics, searchTracks } from './lib/lyricsApi'
+import { findMockMatches } from './lib/mockSearch'
 
 const HISTORY_KEY = 'song-lyrics-finder:history'
 const MAX_HISTORY = 8
 const SIMULATED_DELAY_MS = 500
 const SUGGEST_DEBOUNCE_MS = 300
 const MIN_SUGGEST_LENGTH = 2
-
-// Finds songs in the offline mock catalog by partial, case-insensitive
-// match against title or artist.
-function findMockMatches(query, limit = 3) {
-  const q = query.toLowerCase()
-  return mockLyrics
-    .filter(
-      (song) => song.title.toLowerCase().includes(q) || song.artist.toLowerCase().includes(q),
-    )
-    .slice(0, limit)
-}
 
 function App() {
   const [currentSong, setCurrentSong] = useState(null)
