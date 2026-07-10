@@ -5,20 +5,21 @@ const SUGGEST_BASE = 'https://api.lyrics.ovh/suggest'
 
 // The lyrics endpoint needs an artist and a title as separate values, but
 // the app only has a single free-text search box. The suggest endpoint
-// (Deezer-backed) resolves free text into a real artist/title pair.
-export async function searchTrack(query) {
+// (Deezer-backed) resolves free text into real artist/title candidates so
+// the user can pick the right version instead of us guessing the top hit.
+export async function searchTracks(query, limit = 5) {
   const res = await fetch(`${SUGGEST_BASE}/${encodeURIComponent(query)}`)
   if (!res.ok) {
     throw new Error('Search failed')
   }
 
   const data = await res.json()
-  const track = data.data?.[0]
-  if (!track) {
-    throw new Error('No matching track found')
-  }
-
-  return { artist: track.artist.name, title: track.title }
+  return (data.data ?? []).slice(0, limit).map((track) => ({
+    id: track.id,
+    artist: track.artist.name,
+    title: track.title,
+    thumbnail: track.album?.cover_small || track.artist?.picture_small || null,
+  }))
 }
 
 export async function fetchLyrics(artist, title) {
